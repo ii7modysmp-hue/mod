@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم إدارة المودات - GitHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .upload-section {
+            flex: 1;
+            min-width: 400px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .mods-section {
+            flex: 2;
+            min-width: 400px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #4a00e0;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .form-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"], input[type="file"], select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            background: white;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .upload-area {
+            border: 2px dashed #8e2de2;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            background: white;
+        }
+
+        .upload-area:hover {
+            background-color: #f9f5ff;
+            border-color: #4a00e0;
+        }
+
+        .upload-area i {
+            font-size: 42px;
+            color: #8e2de2;
+            margin-bottom: 12px;
+        }
+
+        .upload-area p {
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-preview {
+            margin: 10px 0;
+            padding: 12px;
+            background: #e9ecef;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            border-right: 4px solid #8e2de2;
+        }
+
+        .file-type-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #4a00e0;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+
+        .btn {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-delete {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+        }
+
+        .btn-download {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+        }
+
+        .btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .mods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .mod-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            position: relative;
+            background: white;
+            border: 1px solid #e9ecef;
+        }
+
+        .mod-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .mod-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .mod-info {
+            padding: 18px;
+        }
+
+        .mod-name {
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 1.3rem;
+            color: #4a00e0;
+        }
+
+        .mod-version {
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            background: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .mod-type {
+            color: #888;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+        }
+
+        .mod-description {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .mod-file-info {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-size: 0.85rem;
+        }
+
+        .mod-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .mod-actions .btn {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 0.85rem;
+        }
+
+        .status-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .github-info {
+            background: #24292e;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .github-info a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+            
+            .mods-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .upload-section, .mods-section {
+                min-width: 100%;
+            }
+            
+            .mod-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧩 لوحة تحكم إدارة المودات - GitHub</h1>
+            <p class="subtitle">إدارة المودات مع التخزين على GitHub Pages</p>
+        </header>
+        
+        <div class="dashboard">
+            <section class="upload-section">
+                <h2 class="section-title">➕ إضافة مود جديد</h2>
+                
+                <div class="github-info">
+                    <strong>🌐 التخزين على:</strong> 
+                    <a href="https://github.com/ii7modysmp-hue/mod" target="_blank">
+                        github.com/ii7modysmp-hue/mod
+                    </a>
+                </div>
+                
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="modName">📛 اسم المود:</label>
+                        <input type="text" id="modName" placeholder="أدخل اسم المود">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="modVersion">🔢 إصدار المود:</label>
+                        <input type="text" id="modVersion" placeholder="مثال: 1.0.0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modType">📦 نوع المود:</label>
+                        <select id="modType">
+                            <option value="behavior">Behavior Pack</option>
+                            <option value="resource">Resource Pack</option>
+                            <option value="addon">Addon</option>
+                            <option value="skin">Skin Pack</option>
+                            <option value="map">World Map</option>
+                            <option value="other">أخرى</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="modDescription">📝 وصف المود:</label>
+                        <textarea id="modDescription" placeholder="أدخل وصفاً للمود..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>🖼️ صورة المود:</label>
+                        <div class="upload-area" id="imageUploadArea">
+                            <i>📸</i>
+                            <p>انقر لاختيار صورة المود</p>
+                            <p style="font-size: 0.8rem; color: #888;">(JPG, PNG, GIF - الحد الأقصى 5MB)</p>
+                            <input type="file" id="modImage" class="file-input" accept="image/*">
+                        </div>
+                        <div id="imagePreview" class="file-preview" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>📁 ملف المود:</label>
+                        <div class="upload-area" id="fileUploadArea">
+                            <i>📦</i>
+                            <p>انقر لاختيار ملف المود</p>
+                            <p style="font-size: 0.8rem; color: #888;">(MCPACK, MCADDON, ZIP, RAR, 7Z)</p>
+                            <input type="file" id="modFile" class="file-input" accept=".mcpack,.mcaddon,.zip,.rar,.7z,.tar,.gz">
+                        </div>
+                        <div id="filePreview" class="file-preview" style="display: none;"></div>
+                    </div>
+                    
+                    <button class="btn" id="uploadBtn" disabled>🚀 رفع إلى GitHub</button>
+                </div>
+                
+                <div id="statusMessage"></div>
+            </section>
+            
+            <section class="mods-section">
+                <h2 class="section-title">📂 المودات المضافة</h2>
+                <div class="mods-grid" id="modsGrid">
+                    <!-- سيتم ملء هذا القسم بالمودات -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- إضافة Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgqgIdXgZflmPT4z3IcaIzg6f7BxLEvyE",
+            authDomain: "matrixmodadd.firebaseapp.com",
+            databaseURL: "https://matrixmodadd-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "matrixmodadd",
+            storageBucket: "matrixmodadd.firebasestorage.app",
+            messagingSenderId: "67540662652",
+            appId: "1:67540662652:web:0c597e33134bccf89accf9"
+        };
+
+        // GitHub Configuration
+        const GITHUB_CONFIG = {
+            username: 'ii7modysmp-hue',
+            repo: 'mod',
+            branch: 'main',
+            token: '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'
+        };
+
+        const GITHUB_BASE_URL = `https://raw.githubusercontent.com/${GITHUB_CONFIG.username}/${GITHUB_CONFIG.repo}/${GITHUB_CONFIG.branch}/`;
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // DOM elements
+        const modNameInput = document.getElementById('modName');
+        const modVersionInput = document.getElementById('modVersion');
+        const modTypeInput = document.getElementById('modType');
+        const modDescriptionInput = document.getElementById('modDescription');
+        const modImageInput = document.getElementById('modImage');
+        const modFileInput = document.getElementById('modFile');
+        const imagePreview = document.getElementById('imagePreview');
+        const filePreview = document.getElementById('filePreview');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const modsGrid = document.getElementById('modsGrid');
+
+        // Variables
+        let selectedImage = null;
+        let selectedFile = null;
+
+        // Event listeners
+        modImageInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleImageSelect(e.target.files[0]);
+            }
+        });
+
+        modFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        [modNameInput, modVersionInput, modDescriptionInput].forEach(input => {
+            input.addEventListener('input', validateForm);
+        });
+
+        uploadBtn.addEventListener('click', uploadMod);
+
+        // Functions
+        function handleImageSelect(file) {
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                showStatus('حجم الصورة كبير جداً. الحد الأقصى 5MB', 'error');
+                return;
+            }
+
+            if (!file.type.match('image.*')) {
+                showStatus('الرجاء اختيار ملف صورة فقط', 'error');
+                return;
+            }
+
+            selectedImage = file;
+            imagePreview.innerHTML = `
+                📸 ${file.name} 
+                <span class="file-type-badge">${formatFileSize(file.size)}</span>
+            `;
+            imagePreview.style.display = 'block';
+            validateForm();
+        }
+
+        function handleFileSelect(file) {
+            const allowedExtensions = ['.mcpack', '.mcaddon', '.zip', '.rar', '.7z', '.tar', '.gz'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!allowedExtensions.includes(fileExtension)) {
+                showStatus('نوع الملف غير مدعوم. الرجاء اختيار ملف مود صالح', 'error');
+                return;
+            }
+
+            selectedFile = file;
+            
+            const fileIcon = getFileIcon(fileExtension);
+            const fileType = getFileType(fileExtension);
+            
+            filePreview.innerHTML = `
+                ${fileIcon} ${file.name} 
+                <span class="file-type-badge">${fileType} - ${formatFileSize(file.size)}</span>
+            `;
+            filePreview.style.display = 'block';
+            validateForm();
+        }
+
+        function getFileIcon(extension) {
+            const icons = {
+                '.mcpack': '🎮',
+                '.mcaddon': '🧩',
+                '.zip': '📦',
+                '.rar': '🗜️',
+                '.7z': '📁'
+            };
+            return icons[extension] || '📄';
+        }
+
+        function getFileType(extension) {
+            const types = {
+                '.mcpack': 'MCPACK',
+                '.mcaddon': 'MCADDON',
+                '.zip': 'ZIP',
+                '.rar': 'RAR',
+                '.7z': '7ZIP'
+            };
+            return types[extension] || 'ملف';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function validateForm() {
+            const isValid = modNameInput.value.trim() && 
+                           modVersionInput.value.trim() && 
+                           selectedImage && 
+                           selectedFile;
+            
+            uploadBtn.disabled = !isValid;
+        }
+
+        function generateModId() {
+            return 'MOD_' + Math.floor(10000 + Math.random() * 90000).toString();
+        }
+
+        async function uploadMod() {
+            const modName = modNameInput.value.trim();
+            const modVersion = modVersionInput.value.trim();
+            const modType = modTypeInput.value;
+            const modDescription = modDescriptionInput.value.trim();
+            const modId = generateModId();
+            
+            if (!modName || !modVersion || !selectedImage || !selectedFile) {
+                showStatus('الرجاء ملء جميع الحقول الإلزامية', 'error');
+                return;
+            }
+            
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<span class="loading"></span> جاري الرفع إلى GitHub...';
+            
+            try {
+                // رفع الملفات إلى GitHub
+                const uploadResult = await uploadToGitHub(
+                    selectedImage, 
+                    selectedFile, 
+                    modName, 
+                    modVersion, 
+                    modType,
+                    modDescription,
+                    modId
+                );
+                
+                if (uploadResult.success) {
+                    // حفظ البيانات في Firebase
+                    const firebaseResult = await saveModToFirebase(uploadResult.modData);
+                    
+                    if (firebaseResult.success) {
+                        showStatus('✅ تم رفع المود إلى GitHub بنجاح', 'success');
+                        resetForm();
+                        loadMods();
+                    } else {
+                        throw new Error(firebaseResult.error);
+                    }
+                } else {
+                    throw new Error(uploadResult.message);
+                }
+                
+            } catch (error) {
+                console.error('Error uploading mod:', error);
+                showStatus('❌ حدث خطأ أثناء الرفع: ' + error.message, 'error');
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '🚀 رفع إلى GitHub';
+            }
+        }
+
+        async function uploadToGitHub(imageFile, modFile, modName, modVersion, modType, modDescription, modId) {
+            try {
+                // إنشاء أسماء الملفات
+                const imageExtension = imageFile.name.split('.').pop();
+                const fileExtension = modFile.name.split('.').pop();
+                
+                const imageFileName = `${modId}_${modName.replace(/[^a-zA-Z0-9-_]/g, '_')}.${imageExtension}`;
+                const modFileName = `${modId}_${modName.replace(/[^a-zA-Z0-9-_]/g, '_')}.${fileExtension}`;
+
+                // رفع الصورة إلى GitHub
+                const imageUpload = await uploadFileToGitHub(
+                    `images/${imageFileName}`,
+                    await readFileAsBase64(imageFile),
+                    `Add mod image: ${modName}`
+                );
+
+                // رفع ملف المود إلى GitHub
+                const modUpload = await uploadFileToGitHub(
+                    `mods/${modFileName}`,
+                    await readFileAsBase64(modFile),
+                    `Add mod file: ${modName}`
+                );
+
+                if (imageUpload.success && modUpload.success) {
+                    const modData = {
+                        id: modId,
+                        name: modName,
+                        version: modVersion,
+                        type: modType,
+                        description: modDescription,
+                        imageUrl: `${GITHUB_BASE_URL}images/${imageFileName}`,
+                        fileUrl: `${GITHUB_BASE_URL}mods/${modFileName}`,
+                        fileName: modFile.name,
+                        fileSize: modFile.size,
+                        fileType: fileExtension,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    return {
+                        success: true,
+                        message: 'تم الرفع بنجاح',
+                        modData: modData
+                    };
+                } else {
+                    return {
+                        success: false,
+                        message: 'فشل في رفع الملفات إلى GitHub'
+                    };
+                }
+
+            } catch (error) {
+                return { 
+                    success: false, 
+                    message: 'خطأ في الاتصال بـ GitHub: ' + error.message 
+                };
+            }
+        }
+
+        async function uploadFileToGitHub(filePath, content, commitMessage) {
+            try {
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.username}/${GITHUB_CONFIG.repo}/contents/${filePath}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_CONFIG.token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: commitMessage,
+                        content: content,
+                        branch: GITHUB_CONFIG.branch
+                    })
+                });
+
+                const result = await response.json();
+                return { success: response.ok, data: result };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // إزالة بادئة base64
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function saveModToFirebase(modData) {
+            try {
+                const newModRef = database.ref('mods').push();
+                await newModRef.set({
+                    id: modData.id,
+                    name: modData.name,
+                    version: modData.version,
+                    type: modData.type,
+                    description: modData.description,
+                    imageUrl: modData.imageUrl,
+                    fileUrl: modData.fileUrl,
+                    fileName: modData.fileName,
+                    fileSize: modData.fileSize,
+                    fileType: modData.fileType,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                return { success: true, key: newModRef.key };
+            } catch (error) {
+                return { 
+                    success: false, 
+                    error: error.message 
+                };
+            }
+        }
+
+        function resetForm() {
+            modNameInput.value = '';
+            modVersionInput.value = '';
+            modDescriptionInput.value = '';
+            modImageInput.value = '';
+            modFileInput.value = '';
+            selectedImage = null;
+            selectedFile = null;
+            imagePreview.style.display = 'none';
+            filePreview.style.display = 'none';
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '🚀 رفع إلى GitHub';
+        }
+
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message ' + type;
+            statusMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // تحميل المودات من Firebase
+        function loadMods() {
+            const modsRef = database.ref('mods');
+            
+            modsRef.on('value', (snapshot) => {
+                modsGrid.innerHTML = '';
+                
+                if (!snapshot.exists()) {
+                    modsGrid.innerHTML = '<p style="text-align: center; padding: 30px; color: #666; background: #f8f9fa; border-radius: 8px;">🎮 لا توجد مودات مضافة بعد</p>';
+                    return;
+                }
+                
+                const mods = snapshot.val();
+                Object.keys(mods).forEach(key => {
+                    const mod = mods[key];
+                    createModCard(mod, key);
+                });
+            });
+        }
+
+        function createModCard(mod, key) {
+            const card = document.createElement('div');
+            card.className = 'mod-card';
+            
+            const fileIcon = getFileIcon('.' + mod.fileName.split('.').pop());
+            const fileType = getFileType('.' + mod.fileName.split('.').pop());
+            
+            card.innerHTML = `
+                <img src="${mod.imageUrl}" alt="${mod.name}" class="mod-image" onerror="this.src='https://via.placeholder.com/300x200/667eea/764ba2?text=🎮+صورة+المود'">
+                <div class="mod-info">
+                    <div class="mod-name">${mod.name}</div>
+                    <div class="mod-version">${mod.version}</div>
+                    <div class="mod-type">📦 ${mod.type} • ${fileIcon} ${fileType}</div>
+                    ${mod.description ? `<div class="mod-description">${mod.description}</div>` : ''}
+                    <div class="mod-file-info">
+                        <strong>📁 الملف:</strong> ${mod.fileName}<br>
+                        <strong>💾 الحجم:</strong> ${formatFileSize(mod.fileSize)}<br>
+                        <strong>🌐 المصدر:</strong> GitHub
+                    </div>
+                    <div class="mod-actions">
+                        <button class="btn btn-download" onclick="downloadMod('${mod.fileUrl}', '${mod.fileName}')">⬇️ تحميل</button>
+                        <button class="btn btn-delete" onclick="deleteMod('${key}', '${mod.id}')">🗑️ حذف</button>
+                    </div>
+                </div>
+            `;
+            
+            modsGrid.appendChild(card);
+        }
+
+        function downloadMod(fileUrl, fileName) {
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function deleteMod(key, modId) {
+            if (!confirm('⚠️ هل أنت متأكد من حذف هذا المود؟')) return;
+            
+            try {
+                // 1. حذف من Firebase
+                await database.ref('mods/' + key).remove();
+                
+                // 2. حذف من GitHub (اختياري - يمكنك إضافته لاحقاً)
+                showStatus('✅ تم حذف المود من القائمة', 'success');
+                
+            } catch (error) {
+                console.error('Error deleting mod:', error);
+                showStatus('❌ حدث خطأ أثناء حذف المود: ' + error.message, 'error');
+            }
+        }
+
+        // تهيئة التطبيق
+        loadMods();
+    </script>
+</body>
+</html>
